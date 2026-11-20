@@ -1,0 +1,331 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with role-based access for the VERTA compliance platform",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "User Firebase Auth UID",
+          "maxLength": 128
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "User primary email address",
+          "maxLength": 150
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User full name or representative name",
+          "maxLength": 100
+        },
+        "role": {
+          "type": "string",
+          "description": "Platform role",
+          "enum": ["visitante_publico", "empresa", "proveedor", "admin"]
+        },
+        "companyName": {
+          "type": "string",
+          "description": "Associated company or business entity",
+          "maxLength": 120
+        },
+        "rfc": {
+          "type": "string",
+          "description": "Tax Identification Number (RFC) in Mexico",
+          "maxLength": 14,
+          "pattern": "^[A-Z&Ñ]{3,4}[0-9]{6}[A-Z0-9]{3}$"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of user registration",
+          "maxLength": 32
+        }
+      },
+      "required": ["id", "email", "role"]
+    },
+    "Company": {
+      "title": "Company",
+      "description": "Verified company in the VERTA PULL Directory",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique company identifier",
+          "maxLength": 64
+        },
+        "name": {
+          "type": "string",
+          "description": "Legal or commercial business name",
+          "maxLength": 150
+        },
+        "rfc": {
+          "type": "string",
+          "description": "Company RFC",
+          "maxLength": 14
+        },
+        "sector": {
+          "type": "string",
+          "description": "Industry sector",
+          "maxLength": 80
+        },
+        "validationStatus": {
+          "type": "string",
+          "description": "Standardized VERTA audit status",
+          "enum": [
+            "validado",
+            "validado_con_observaciones",
+            "informacion_pendiente",
+            "actualizacion_requerida",
+            "no_cumple",
+            "validacion_vencida"
+          ]
+        },
+        "verificationDate": {
+          "type": "string",
+          "description": "Date of last audit conclusion",
+          "maxLength": 32
+        },
+        "validityDate": {
+          "type": "string",
+          "description": "Validity expiration date",
+          "maxLength": 32
+        },
+        "description": {
+          "type": "string",
+          "description": "Corporate overview and services",
+          "maxLength": 600
+        },
+        "coverage": {
+          "type": "string",
+          "description": "Geographical coverage",
+          "maxLength": 100
+        },
+        "headquarters": {
+          "type": "string",
+          "description": "Main corporate headquarters",
+          "maxLength": 100
+        },
+        "contactEmail": {
+          "type": "string",
+          "format": "email",
+          "description": "Official contact email",
+          "maxLength": 120
+        },
+        "website": {
+          "type": "string",
+          "description": "Corporate website URL",
+          "maxLength": 150
+        },
+        "verifiedDocumentsCount": {
+          "type": "number",
+          "description": "Number of verified evidence documents"
+        },
+        "totalDocumentsCount": {
+          "type": "number",
+          "description": "Total expected evidence documents"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Last updated timestamp",
+          "maxLength": 32
+        }
+      },
+      "required": ["id", "name", "rfc", "validationStatus"]
+    },
+    "VerificationDocument": {
+      "title": "VerificationDocument",
+      "description": "Compliance evidence document for provider audit",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Document requirement ID",
+          "maxLength": 64
+        },
+        "userId": {
+          "type": "string",
+          "description": "Owner user UID",
+          "maxLength": 128
+        },
+        "title": {
+          "type": "string",
+          "description": "Requirement title (e.g. Opinion 32-D SAT)",
+          "maxLength": 100
+        },
+        "description": {
+          "type": "string",
+          "description": "Requirement explanation and legal criteria",
+          "maxLength": 300
+        },
+        "status": {
+          "type": "string",
+          "description": "Document verification status",
+          "enum": ["validado", "pendiente", "corregir", "no_entregado"]
+        },
+        "requirement": {
+          "type": "string",
+          "description": "Mandatory or optional flag",
+          "enum": ["Required", "Optional"]
+        },
+        "fileName": {
+          "type": "string",
+          "description": "Uploaded file name",
+          "maxLength": 120
+        },
+        "fileSize": {
+          "type": "string",
+          "description": "Uploaded file size string",
+          "maxLength": 30
+        },
+        "lastUpdated": {
+          "type": "string",
+          "description": "Last upload or verification date",
+          "maxLength": 32
+        }
+      },
+      "required": ["id", "userId", "title", "status", "requirement"]
+    },
+    "JourneyItem": {
+      "title": "JourneyItem",
+      "description": "Supplier invitation and homologation request for contracting companies",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Journey record ID",
+          "maxLength": 64
+        },
+        "companyOwnerId": {
+          "type": "string",
+          "description": "Contracting company user UID",
+          "maxLength": 128
+        },
+        "code": {
+          "type": "string",
+          "description": "Tracking code e.g. VRT-8921",
+          "maxLength": 32
+        },
+        "providerName": {
+          "type": "string",
+          "description": "Candidate supplier legal name",
+          "maxLength": 120
+        },
+        "rfc": {
+          "type": "string",
+          "description": "Supplier RFC",
+          "maxLength": 14
+        },
+        "service": {
+          "type": "string",
+          "description": "Service scope required",
+          "maxLength": 100
+        },
+        "validationLevel": {
+          "type": "string",
+          "description": "Audit scope depth",
+          "enum": ["basica", "estandar", "critica", "integral"]
+        },
+        "trackingStatus": {
+          "type": "string",
+          "description": "Workflow pipeline status",
+          "enum": [
+            "invitacion_enviada",
+            "aceptada",
+            "pago_completado",
+            "en_proceso",
+            "observaciones_pendientes",
+            "validacion_finalizada"
+          ]
+        },
+        "progressPercent": {
+          "type": "number",
+          "description": "Completion progress percentage"
+        },
+        "lastUpdate": {
+          "type": "string",
+          "description": "Timestamp of last movement",
+          "maxLength": 32
+        }
+      },
+      "required": ["id", "companyOwnerId", "providerName", "rfc", "trackingStatus"]
+    },
+    "ExpertRequest": {
+      "title": "ExpertRequest",
+      "description": "Advisory and consultant accompaniment request",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Request UUID",
+          "maxLength": 64
+        },
+        "userId": {
+          "type": "string",
+          "description": "Creator user UID or anonymous string",
+          "maxLength": 128
+        },
+        "contactName": {
+          "type": "string",
+          "description": "Requester name",
+          "maxLength": 100
+        },
+        "contactEmail": {
+          "type": "string",
+          "format": "email",
+          "description": "Contact email address",
+          "maxLength": 120
+        },
+        "contactPhone": {
+          "type": "string",
+          "description": "Phone number",
+          "maxLength": 30
+        },
+        "topic": {
+          "type": "string",
+          "description": "Specialty or problem area",
+          "maxLength": 100
+        },
+        "notes": {
+          "type": "string",
+          "description": "Specific query description",
+          "maxLength": 800
+        },
+        "status": {
+          "type": "string",
+          "description": "Request ticket status",
+          "enum": ["recibido", "asignado", "en_atencion", "concluido"]
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Submission timestamp",
+          "maxLength": 32
+        }
+      },
+      "required": ["id", "contactName", "contactEmail", "topic", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles and credentials"
+    },
+    "/companies/{companyId}": {
+      "schema": "Company",
+      "description": "PULL Directory audited companies"
+    },
+    "/verification_documents/{documentId}": {
+      "schema": "VerificationDocument",
+      "description": "Provider verification documents and evidence"
+    },
+    "/journey_items/{itemId}": {
+      "schema": "JourneyItem",
+      "description": "Contracting company supplier homologation pipeline"
+    },
+    "/expert_requests/{requestId}": {
+      "schema": "ExpertRequest",
+      "description": "Expert and consultant assistance tickets"
+    }
+  }
+}

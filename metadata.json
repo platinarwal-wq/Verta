@@ -1,0 +1,8 @@
+{
+  "name": "VERTA TANZO",
+  "description": "Panel de control web inteligente para que los proveedores de servicios gestionen, suban y realicen el seguimiento de su documentación legal y empresarial.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

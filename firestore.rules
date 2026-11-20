@@ -1,0 +1,121 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default-deny all unmapped routes
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'davidikgd@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // --- USERS COLLECTION ---
+    match /users/{userId} {
+      allow get: if isValidId(userId) && (isOwner(userId) || isAdmin());
+      allow list: if isAdmin();
+      allow create: if isValidId(userId) && isOwner(userId)
+        && incoming().id == userId
+        && incoming().email is string && incoming().email.size() <= 150
+        && incoming().role in ['visitante_publico', 'empresa', 'proveedor', 'admin']
+        && (!('companyName' in incoming()) || (incoming().companyName is string && incoming().companyName.size() <= 120))
+        && (!('rfc' in incoming()) || (incoming().rfc is string && incoming().rfc.size() <= 14));
+      allow update: if isValidId(userId) && (
+        isAdmin() || (
+          isOwner(userId)
+          && incoming().id == existing().id
+          && incoming().role == existing().role
+          && incoming().email == existing().email
+        )
+      );
+      allow delete: if isAdmin();
+    }
+
+    // --- COMPANIES COLLECTION (PULL DIRECTORY) ---
+    match /companies/{companyId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // --- VERIFICATION DOCUMENTS COLLECTION (PROVIDER EVIDENCE) ---
+    match /verification_documents/{docId} {
+      allow get: if isValidId(docId) && (isAdmin() || (isSignedIn() && existing().userId == request.auth.uid));
+      allow list: if isSignedIn() && (isAdmin() || resource.data.userId == request.auth.uid);
+      allow create: if isValidId(docId) && isSignedIn()
+        && (isAdmin() || incoming().userId == request.auth.uid)
+        && incoming().title is string && incoming().title.size() <= 100
+        && incoming().status in ['validado', 'pendiente', 'corregir', 'no_entregado']
+        && incoming().requirement in ['Required', 'Optional'];
+      allow update: if isValidId(docId) && isSignedIn() && (
+        isAdmin() || (
+          existing().userId == request.auth.uid
+          && incoming().userId == existing().userId
+          && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'fileName', 'fileSize', 'lastUpdated', 'comments', 'file'])
+        )
+      );
+      allow delete: if isValidId(docId) && (isAdmin() || (isSignedIn() && existing().userId == request.auth.uid));
+    }
+
+    // --- JOURNEY ITEMS (CONTRACTING COMPANIES PIPELINE) ---
+    match /journey_items/{itemId} {
+      allow get: if isValidId(itemId) && (isAdmin() || (isSignedIn() && existing().companyOwnerId == request.auth.uid));
+      allow list: if isSignedIn() && (isAdmin() || resource.data.companyOwnerId == request.auth.uid);
+      allow create: if isValidId(itemId) && isSignedIn()
+        && (isAdmin() || incoming().companyOwnerId == request.auth.uid)
+        && incoming().providerName is string && incoming().providerName.size() <= 120
+        && incoming().rfc is string && incoming().rfc.size() <= 14
+        && incoming().trackingStatus in [
+          'invitacion_enviada', 'aceptada', 'pago_completado', 
+          'en_proceso', 'observaciones_pendientes', 'validacion_finalizada'
+        ];
+      allow update: if isValidId(itemId) && isSignedIn() && (
+        isAdmin() || (
+          existing().companyOwnerId == request.auth.uid
+          && incoming().companyOwnerId == existing().companyOwnerId
+          && incoming().diff(existing()).affectedKeys().hasOnly([
+            'trackingStatus', 'progressPercent', 'lastUpdate', 'internalDecision', 'observations'
+          ])
+        )
+      );
+      allow delete: if isValidId(itemId) && (isAdmin() || (isSignedIn() && existing().companyOwnerId == request.auth.uid));
+    }
+
+    // --- EXPERT REQUESTS ---
+    match /expert_requests/{requestId} {
+      allow get: if isValidId(requestId) && (
+        isAdmin() || (isSignedIn() && existing().userId == request.auth.uid)
+      );
+      allow list: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow create: if isValidId(requestId)
+        && incoming().contactName is string && incoming().contactName.size() <= 100
+        && incoming().contactEmail is string && incoming().contactEmail.size() <= 120
+        && incoming().topic is string && incoming().topic.size() <= 100
+        && incoming().status in ['recibido', 'asignado', 'en_atencion', 'concluido'];
+      allow update, delete: if isAdmin();
+    }
+  }
+}

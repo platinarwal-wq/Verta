@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Montserrat", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  --color-verta-navy: #050a18;
+  --color-verta-dark-blue: #0a1128;
+  --color-verta-slate-blue: #10214f;
+  --color-verta-cyan: #00f2ff;
+  --color-verta-cobalt: #0047ab;
+  --color-verta-coral: #FF7F50;
+  --color-verta-coral-hover: #ff6328;
+  --color-verta-emerald: #10b981;
+  --color-verta-rose: #f43f5e;
+}
+
+/* Immersive background texture */
+body {
+  background: radial-gradient(circle at 0% 0%, rgba(16, 33, 79, 0.5) 0%, transparent 50%),
+              radial-gradient(circle at 100% 100%, rgba(6, 182, 212, 0.05) 0%, transparent 50%),
+              linear-gradient(135deg, #050a18 0%, #0a1128 100%);
+  background-attachment: fixed;
+  color: #e2e8f0;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #050a18;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(16, 26, 53, 0.8);
+  border: 1px solid rgba(6, 182, 212, 0.15);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00f2ff;
+}
+
+/* Glass card styling from design */
+.verta-glass {
+  background: rgba(16, 26, 53, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(6, 182, 212, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.verta-glass-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.verta-glass-hover:hover {
+  border-color: rgba(0, 242, 255, 0.45);
+  box-shadow: 0 0 20px rgba(0, 242, 255, 0.2), 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+/* Immersive Coral Buttons */
+.verta-coral-btn {
+  background: #FF7F50;
+  box-shadow: 0 4px 15px rgba(255, 127, 80, 0.3);
+  transition: all 0.3s ease;
+}
+
+.verta-coral-btn:hover {
+  transform: translateY(-1.5px);
+  background: #ff6328;
+  box-shadow: 0 6px 22px rgba(255, 127, 80, 0.45);
+}
+
+/* Immersive Neon Cyan-Blue Buttons */
+.verta-cyan-btn {
+  background: linear-gradient(90deg, #00f2ff 0%, #0047ab 100%);
+  box-shadow: 0 4px 15px rgba(0, 242, 255, 0.25);
+  transition: all 0.3s ease;
+}
+
+.verta-cyan-btn:hover {
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 22px rgba(0, 242, 255, 0.4);
+}
+
+/* Neon glow utility */
+.neon-border-cyan {
+  box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+}
+
+.progress-glow {
+  box-shadow: 0 0 15px rgba(0, 242, 255, 0.5);
+}
+
+/* Texture simulation and animations */
+.metal-texture {
+  background: radial-gradient(circle at 0% 0%, rgba(16, 33, 79, 0.5) 0%, transparent 50%),
+              radial-gradient(circle at 100% 100%, rgba(6, 182, 212, 0.05) 0%, transparent 50%),
+              linear-gradient(135deg, #050a18 0%, #0a1128 100%);
+}
